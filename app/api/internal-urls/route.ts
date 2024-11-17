@@ -1,15 +1,23 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const urlSchema = z.object({
   url: z.string().url(),
 });
 
-export async function GET(request: Request) {
+export const runtime = 'edge';
+
+export async function GET(request: NextRequest) {
   try {
-    // Get URL from query parameters
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
+
+    if (!url) {
+      return NextResponse.json(
+        { success: false, error: 'URL parameter is required' },
+        { status: 400 }
+      );
+    }
 
     // Validate URL
     const validatedData = urlSchema.parse({ url });
