@@ -1,11 +1,27 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
 import { Globe2, FileText, Link2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Home() {
+  const [url, setUrl] = useState('');
+
+  const handleExtractText = async () => {
+    try {
+      const response = await fetch(`/api/extract-text?url=${encodeURIComponent(url)}`);
+      const data = await response.json();
+      
+      if (data.success) {
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -28,11 +44,27 @@ export default function Home() {
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Get all visible text content from a webpage
             </p>
-            <div className="space-y-2">
-              <Label htmlFor="text-url">Example Request:</Label>
-              <code className="block bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
-                GET /api/extract-text?url=https://example.com
-              </code>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="url">URL to Extract</Label>
+                <Input
+                  id="url"
+                  type="url"
+                  placeholder="https://example.com"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <Button onClick={handleExtractText}>
+                Extract Text
+              </Button>
+              <div className="mt-4">
+                <Label>Example Request:</Label>
+                <code className="block bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
+                  GET /api/extract-text?url=https://example.com
+                </code>
+              </div>
             </div>
           </div>
 
@@ -46,7 +78,7 @@ export default function Home() {
               Extract all internal links from a webpage
             </p>
             <div className="space-y-2">
-              <Label htmlFor="urls-url">Example Request:</Label>
+              <Label>Example Request:</Label>
               <code className="block bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm">
                 GET /api/internal-urls?url=https://example.com
               </code>
